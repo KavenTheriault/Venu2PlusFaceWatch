@@ -13,6 +13,7 @@ class CustomWatchView extends WatchUi.WatchFace {
     private var fontSmall;
     private var fontMedium;
     private var fontLarge;
+    private var fontWeatherIcons;
 
     // Images
     private var background;
@@ -64,6 +65,7 @@ class CustomWatchView extends WatchUi.WatchFace {
         fontSmall = WatchUi.loadResource(Rez.Fonts.CustomSmall);
         fontMedium = WatchUi.loadResource(Rez.Fonts.CustomMedium);
         fontLarge = WatchUi.loadResource(Rez.Fonts.CustomLarge);
+        fontWeatherIcons = WatchUi.loadResource(Rez.Fonts.WeatherIcons);
 
         // Images
         background = WatchUi.loadResource(Rez.Drawables.Background);
@@ -98,11 +100,12 @@ class CustomWatchView extends WatchUi.WatchFace {
 
         var dataHeight = 266;
         var sideDataDistance = 130;
+        var weatherSpacing = 10;
 
         // Weather
         var weather = Weather.getCurrentConditions();
-        var weatherString = Lang.format("$1$ $2$", [getWeatherIcon(weather.condition, clockTime), weather.temperature.format("%2d")]);
-        dc.drawText(centerX - sideDataDistance, dataHeight, fontMedium, weatherString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(centerX - sideDataDistance - weatherSpacing, dataHeight, fontWeatherIcons, getWeatherIconCode(weather.condition, clockTime), Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(centerX - sideDataDistance, dataHeight, fontMedium, weather.temperature.format("%2d"), Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // HR
         var hr = Activity.getActivityInfo().currentHeartRate;
@@ -162,112 +165,236 @@ class CustomWatchView extends WatchUi.WatchFace {
     function onEnterSleep() as Void {
     }
 
-    function getWeatherIcon(condition, clockTime) {
-		var isNight = clockTime.hour >= 20 or clockTime.hour < 6;
-		var icon;
-		switch(condition){
-			case Toybox.Weather.CONDITION_CLEAR:{
-                if (isNight) {
-                    icon = ICON_WEATHER_CLEAR_NIGHT;
-                } else {
-                    icon = ICON_WEATHER_CLEAR;
-                }
-				break;
-			}
-			case Toybox.Weather.CONDITION_PARTLY_CLOUDY:{
-				icon = ICON_WEATHER_PARTLY_CLOUDY;
-				break;
-			}
-			case Toybox.Weather.CONDITION_MOSTLY_CLOUDY:{
-				icon = ICON_WEATHER_MOSTLY_CLOUDY;
-				break;
-			}
-			case Toybox.Weather.CONDITION_RAIN:{
-				icon = ICON_WEATHER_RAIN;
-				break;
-			}
-			case Toybox.Weather.CONDITION_SNOW:{
-				icon = ICON_WEATHER_SNOW;
-				break;
-			}
-			case Toybox.Weather.CONDITION_WINDY:{
-				icon = ICON_WEATHER_WINDY;
-				break;
-			}
-			case Toybox.Weather.CONDITION_THUNDERSTORMS:{
-				icon = ICON_WEATHER_THUNDERSTORMS;
-				break;
-			}
-            case Toybox.Weather.CONDITION_SCATTERED_THUNDERSTORMS:{
-				icon = ICON_WEATHER_THUNDERSTORMS;
-				break;
-			}
-			case Toybox.Weather.CONDITION_LIGHT_RAIN:{
-				icon = ICON_WEATHER_LIGHT_RAIN;
-				break;
-			}
-			case Toybox.Weather.CONDITION_HEAVY_RAIN:{
-				icon = ICON_WEATHER_RAIN;
-				break;
-			}
-			case Toybox.Weather.CONDITION_LIGHT_SNOW:{
-				icon = ICON_WEATHER_LIGHT_SNOW;
-				break;
-			}
-			case Toybox.Weather.CONDITION_HEAVY_SNOW:{
-				icon = ICON_WEATHER_HEAVY_SNOW;
-				break;
-			}
-			case Toybox.Weather.CONDITION_LIGHT_RAIN_SNOW:{
-				icon = ICON_WEATHER_LIGHT_RAIN;
-				break;
-			}
-			case Toybox.Weather.CONDITION_HEAVY_RAIN_SNOW:{
-				icon = ICON_WEATHER_RAIN;
-				break;
-			}
-			case Toybox.Weather.CONDITION_CLOUDY:{
-				icon = ICON_WEATHER_MOSTLY_CLOUDY;
-				break;
-			}
-			case Toybox.Weather.CONDITION_RAIN_SNOW:{
-				icon = ICON_WEATHER_RAIN;
-				break;
-			}
-			case Toybox.Weather.CONDITION_PARTLY_CLEAR:{
-				icon = ICON_WEATHER_PARTLY_CLOUDY ;
-				break;
-			}
-			case Toybox.Weather.CONDITION_MOSTLY_CLEAR:{
-                if (isNight) {
-                    icon = ICON_WEATHER_MOSTLY_CLEAR_NIGHT;
-                } else {
-                    icon = ICON_WEATHER_MOSTLY_CLEAR;
-                }
-				break;
-			}
-			case Toybox.Weather.CONDITION_LIGHT_SHOWERS:{
-				icon = ICON_WEATHER_MOSTLY_CLEAR;
-				break;
-			}
-			case Toybox.Weather.CONDITION_SHOWERS:{
-				icon = ICON_WEATHER_RAIN;
-				break;
-			}
-			case Toybox.Weather.CONDITION_HEAVY_SHOWERS:{
-				icon = ICON_WEATHER_RAIN;
-				break;
-			}
-			case Toybox.Weather.CONDITION_FREEZING_RAIN:{
-				icon = ICON_WEATHER_FREEZING_RAIN;
-				break;
-			}
-			default:{
-				icon = ICON_WEATHER_PARTLY_CLOUDY;
-				break;
-			}
-		}
-		return icon;
-	}
+    // Code from https://github.com/duchacekjan/jgsface/blob/master/source/JGSCommonModule.mc
+    function getWeatherIconCode(condition, clockTime) {
+        var isNight = clockTime.hour >= 20 || clockTime.hour < 6;
+        var code;
+        switch (condition) {
+            case Toybox.Weather.CONDITION_CLEAR: {
+                code = 'A';
+                break;
+            }
+            case Toybox.Weather.CONDITION_PARTLY_CLOUDY: {
+                code = 'B';
+                break;
+            }
+            case Toybox.Weather.CONDITION_MOSTLY_CLOUDY: {
+                code = 'C';
+                break;
+            }
+            case Toybox.Weather.CONDITION_RAIN: {
+                code = 'D';
+                break;
+            }
+            case Toybox.Weather.CONDITION_SNOW: {
+                code = 'E';
+                break;
+            }
+            case Toybox.Weather.CONDITION_WINDY: {
+                code = 'F';
+                break;
+            }
+            case Toybox.Weather.CONDITION_THUNDERSTORMS: {
+                code = 'G';
+                break;
+            }
+            case Toybox.Weather.CONDITION_WINTRY_MIX: {
+                code = 'H';
+                break;
+            }
+            case Toybox.Weather.CONDITION_FOG: {
+                code = 'I';
+                break;
+            }
+            case Toybox.Weather.CONDITION_HAZY: {
+                code = '@';
+                break;
+            }
+            case Toybox.Weather.CONDITION_HAIL: {
+                code = 'J';
+                break;
+            }
+            case Toybox.Weather.CONDITION_SCATTERED_SHOWERS: {
+                code = 'K';
+                break;
+            }
+            case Toybox.Weather.CONDITION_SCATTERED_THUNDERSTORMS: {
+                code = 'L';
+                break;
+            }
+            case Toybox.Weather.CONDITION_UNKNOWN_PRECIPITATION: {
+                code = '?';
+                break;
+            }
+            case Toybox.Weather.CONDITION_LIGHT_RAIN: {
+                code = '7';
+                break;
+            }
+            case Toybox.Weather.CONDITION_HEAVY_RAIN: {
+                code = '4';
+                break;
+            }
+            case Toybox.Weather.CONDITION_LIGHT_SNOW: {
+                code = '6';
+                break;
+            }
+            case Toybox.Weather.CONDITION_HEAVY_SNOW: {
+                code = '3';
+                break;
+            }
+            case Toybox.Weather.CONDITION_LIGHT_RAIN_SNOW: {
+                code = '5';
+                break;
+            }
+            case Toybox.Weather.CONDITION_HEAVY_RAIN_SNOW: {
+                code = '/';
+                break;
+            }
+            case Toybox.Weather.CONDITION_CLOUDY: {
+                code = '\\';
+                break;
+            }
+            case Toybox.Weather.CONDITION_RAIN_SNOW: {
+                code = '5';
+                break;
+            }
+            case Toybox.Weather.CONDITION_PARTLY_CLEAR: {
+                code = 'C';
+                break;
+            }
+            case Toybox.Weather.CONDITION_MOSTLY_CLEAR: {
+                code = 'B';
+                break;
+            }
+            case Toybox.Weather.CONDITION_LIGHT_SHOWERS: {
+                code = 'K';
+                break;
+            }
+            case Toybox.Weather.CONDITION_SHOWERS: {
+                code = 'M';
+                break;
+            }
+            case Toybox.Weather.CONDITION_HEAVY_SHOWERS: {
+                code = 'D';
+                break;
+            }
+            case Toybox.Weather.CONDITION_CHANCE_OF_SHOWERS: {
+                code = 'K';
+                break;
+            }
+            case Toybox.Weather.CONDITION_CHANCE_OF_THUNDERSTORMS: {
+                code = 'L';
+                break;
+            }
+            case Toybox.Weather.CONDITION_MIST: {
+                code = '(';
+                break;
+            }
+            case Toybox.Weather.CONDITION_DUST: {
+                code = '{';
+                break;
+            }
+            case Toybox.Weather.CONDITION_DRIZZLE: {
+                code = '#';
+                break;
+            }
+            case Toybox.Weather.CONDITION_TORNADO: {
+                code = '$';
+                break;
+            }
+            case Toybox.Weather.CONDITION_SMOKE: {
+                code = '}';
+                break;
+            }
+            case Toybox.Weather.CONDITION_ICE: {
+                code = '2';
+                break;
+            }
+            case Toybox.Weather.CONDITION_SAND: {
+                code = '{';
+                break;
+            }
+            case Toybox.Weather.CONDITION_SQUALL: {
+                code = ']';
+                break;
+            }
+            case Toybox.Weather.CONDITION_SANDSTORM: {
+                code = '[';
+                break;
+            }
+            case Toybox.Weather.CONDITION_VOLCANIC_ASH: {
+                code = ')';
+                break;
+            }
+            case Toybox.Weather.CONDITION_HAZE: {
+                code = '(';
+                break;
+            }
+            case Toybox.Weather.CONDITION_FAIR: {
+                code = 'N';
+                break;
+            }
+            case Toybox.Weather.CONDITION_HURRICANE: {
+                code = '9';
+                break;
+            }
+            case Toybox.Weather.CONDITION_TROPICAL_STORM: {
+                code = '8';
+                break;
+            }
+            case Toybox.Weather.CONDITION_CHANCE_OF_SNOW: {
+                code = 'O';
+                break;
+            }
+            case Toybox.Weather.CONDITION_CHANCE_OF_RAIN_SNOW: {
+                code = 'H';
+                break;
+            }
+            case Toybox.Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN: {
+                code = '7';
+                break;
+            }
+            case Toybox.Weather.CONDITION_CLOUDY_CHANCE_OF_SNOW: {
+                code = '6';
+                break;
+            }
+            case Toybox.Weather.CONDITION_CLOUDY_CHANCE_OF_RAIN_SNOW: {
+                code = '5';
+                break;
+            }
+            case Toybox.Weather.CONDITION_FLURRIES: {
+                code = '4';
+                break;
+            }
+            case Toybox.Weather.CONDITION_FREEZING_RAIN: {
+                code = '3';
+                break;
+            }
+            case Toybox.Weather.CONDITION_SLEET: {
+                code = 'P';
+                break;
+            }
+            case Toybox.Weather.CONDITION_ICE_SNOW: {
+                code = '2';
+                break;
+            }
+            case Toybox.Weather.CONDITION_THIN_CLOUDS: {
+                code = '1';
+                break;
+            }
+            default: {
+                code = '0';
+                break;
+            }
+        }
 
+        if (isNight && code >= 'A' && code <= 'Z') {
+            code = code.toLower();
+        }
+        if (code != null) {
+            code = code.toString();
+        }
+
+        return code;
+    }
 }

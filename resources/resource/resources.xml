@@ -1,0 +1,7 @@
+<resources>
+    <fonts>
+        <font id="CustomSmall" filename="fonts/custom_small.fnt"/>
+        <font id="CustomMedium" filename="fonts/custom_medium.fnt"/>
+        <font id="CustomLarge" filename="fonts/custom_large.fnt"/>
+    </fonts>
+</resources>

@@ -104,8 +104,11 @@ class CustomWatchView extends WatchUi.WatchFace {
 
         // Weather
         var weather = Weather.getCurrentConditions();
-        dc.drawText(centerX - sideDataDistance - weatherSpacing, dataHeight, fontWeatherIcons, getWeatherIconCode(weather.condition, clockTime), Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
-        dc.drawText(centerX - sideDataDistance, dataHeight, fontMedium, weather.temperature.format("%2d"), Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var condition = weather != null && weather.condition != null ? weather.condition : Toybox.Weather.CONDITION_CLEAR;
+        var temperature = weather != null && weather.temperature != null ? weather.temperature.format("%2d") : "--";
+        dc.drawText(centerX - sideDataDistance - weatherSpacing, dataHeight, fontWeatherIcons, getWeatherIconCode(condition, clockTime), Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(centerX - sideDataDistance, dataHeight, fontMedium, temperature, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // HR
         var hr = Activity.getActivityInfo().currentHeartRate;

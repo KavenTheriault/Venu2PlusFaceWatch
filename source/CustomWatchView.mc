@@ -88,35 +88,49 @@ class CustomWatchView extends WatchUi.WatchFace {
         // Text color
         dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
 
+        var gold = 0x997946;
+        var timeHeight = 115;
+        var dateHeight = 185;
+        var shadow_distance = 3;
+
         // Time
         var clockTime = System.getClockTime();
         var timeString = Lang.format("$1$:$2$", [clockTime.hour.format("%02d"), clockTime.min.format("%02d")]);
-        dc.drawText(centerX, 115, fontLarge, timeString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        dc.setColor(gold, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX + shadow_distance, timeHeight + shadow_distance, fontLarge, timeString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, timeHeight, fontLarge, timeString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // Date
         var today = Gregorian.info(Time.now(), Time.FORMAT_MEDIUM);
         var dateString = Lang.format("$1$ $2$ $3$", [today.day_of_week.toLower(), today.day, today.month.toLower()]);
-        dc.drawText(centerX, 185, fontMedium, dateString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
-        var dataHeight = 266;
-        var sideDataDistance = 130;
-        var weatherSpacing = 10;
+        dc.setColor(gold, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX + shadow_distance, dateHeight + shadow_distance, fontMedium, dateString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.setColor(Graphics.COLOR_WHITE, Graphics.COLOR_TRANSPARENT);
+        dc.drawText(centerX, dateHeight, fontMedium, dateString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+
+        var highDataHeight = 245;
+        var lowDataHeight = 280;
+        var sideDataDistance = 122;
+        var weatherSpacing = 18;
 
         // Weather
         var weather = Weather.getCurrentConditions();
 
         var condition = weather != null && weather.condition != null ? weather.condition : Toybox.Weather.CONDITION_CLEAR;
         var temperature = weather != null && weather.temperature != null ? weather.temperature.format("%2d") : "--";
-        dc.drawText(centerX - sideDataDistance - weatherSpacing, dataHeight, fontWeatherIcons, getWeatherIconCode(condition, clockTime), Graphics.TEXT_JUSTIFY_RIGHT | Graphics.TEXT_JUSTIFY_VCENTER);
-        dc.drawText(centerX - sideDataDistance, dataHeight, fontMedium, temperature, Graphics.TEXT_JUSTIFY_LEFT | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(centerX - sideDataDistance, highDataHeight - weatherSpacing, fontWeatherIcons, getWeatherIconCode(condition, clockTime), Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        dc.drawText(centerX - sideDataDistance, highDataHeight + weatherSpacing, fontMedium, temperature, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // HR
         var hr = Activity.getActivityInfo().currentHeartRate;
         if (hr == null) {
             hr = "--";
         }
-        var hrString = Lang.format("$1$ $2$", [ICON_HEART, hr]);
-        dc.drawText(centerX, dataHeight, fontMedium, hrString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        var hrString = Lang.format("$1$\n$2$", [ICON_HEART, hr]);
+        dc.drawText(centerX, lowDataHeight, fontMedium, hrString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // Battery
         var sysStats = System.getSystemStats();
@@ -132,8 +146,8 @@ class CustomWatchView extends WatchUi.WatchFace {
         } else {
             batteryIcon = ICON_BATTERY_0;
         }
-        var batteryString = Lang.format("$1$ $2$", [batteryIcon, sysStats.battery.format("%2d")]);
-        dc.drawText(centerX + sideDataDistance, dataHeight, fontMedium, batteryString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
+        var batteryString = Lang.format("$1$\n$2$", [batteryIcon, sysStats.battery.format("%2d")]);
+        dc.drawText(centerX + sideDataDistance, highDataHeight, fontMedium, batteryString, Graphics.TEXT_JUSTIFY_CENTER | Graphics.TEXT_JUSTIFY_VCENTER);
 
         // Icons
         var iconsString = "";
